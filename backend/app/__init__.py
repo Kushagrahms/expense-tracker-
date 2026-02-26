@@ -5,10 +5,12 @@ from app.routes.auth import auth_bp
 from .extensions import db
 from flask_jwt_extended import JWTManager
 from app.routes.expense import expense_bp
+from flask_cors import CORS
 
 def create_app():
 
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(Config)#creation of app
 
     #for login 
