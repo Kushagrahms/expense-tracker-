@@ -1,6 +1,11 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
+  const navigate=useNavigate();
+  const handleLogout=()=>{
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
   return (
     <div className="w-72 min-h-screen bg-gradient-to-b from-[#0f172a] via-[#0c1b33] to-[#081426] border-r border-white/5 shadow-2xl text-textSecondary flex flex-col px-8 py-10">
       
@@ -79,7 +84,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="mt-auto pt-10">
-        <button className="text-danger hover:opacity-80 transition">
+        <button className="text-danger hover:opacity-80 transition" onClick={handleLogout}>
           Log Out
         </button>
       </div>

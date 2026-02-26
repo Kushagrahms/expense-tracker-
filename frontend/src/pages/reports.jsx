@@ -14,7 +14,9 @@ import {PieChart,Pie,Cell,
 export default function Reports(){
   const[expenses,setExpenses]=useState([]);
   useEffect(()=>{
-    API.get("/expenses")
+      const token = localStorage.getItem("token");
+      if (!token) return;
+    API.get("/expenses/")
     .then((res)=>{
       setExpenses(res.data.data.expenses || [] );
   })
@@ -66,9 +68,23 @@ monthlyExpenses.forEach((expense)=>{
 });
 const trendData=Object.entries(trendmap).map(([date,amount])=>({date,amount,}));
 //progress bar
-const monthlyBudget=10000;
-const budgetPercentage=Math.min((monthTotal/monthlyBudget)*100,100);
-const colors=["#1dd5f5", "#32b150", "#8b5cf6", "#f59e0b", "#ef4444"];
+const [monthlyBudget,setMonthlyBudget]=useState(0);
+useEffect(()=>{
+  API.get("/budgets/")
+  .then((res)=>{
+    setMonthlyBudget(res.data.amount);
+  })
+  .catch((err)=>{
+    console.log(err.response?.data || err.message);
+  });
+}, []);
+const budgetPercentage =
+  monthlyBudget > 0
+    ? Math.min((monthTotal / monthlyBudget) * 100, 100)
+    : 0;const colors=["#1dd5f5", "#32b150", "#8b5cf6", "#f59e0b", "#ef4444"];
+
+console.log("Month total:", monthTotal);
+console.log("Monthly budget:", monthlyBudget);
 
   return (
     <div className="space-y-8">

@@ -9,7 +9,7 @@ from app.utils.validators import validate_expense_data
 
 expense_bp=Blueprint("Expense",__name__,url_prefix="/expenses")
 #adding expense route
-@expense_bp.route("",methods=["POST"])
+@expense_bp.route("/",methods=["POST"])
 @jwt_required()
 def add_expense():
     user_id=int(get_jwt_identity())
@@ -33,9 +33,12 @@ def add_expense():
 
 #get  user expense route
 
-@expense_bp.route("",methods=["GET"])
-@jwt_required()
+@expense_bp.route("/",methods=["GET","OPTIONS"])
+@jwt_required(optional=True)
 def get_expenses():
+    if request.method=="OPTIONS":
+        return jsonify({}),200
+        
     user_id=int(get_jwt_identity())
 
     expenses=Expense.query.filter_by(user_id=user_id).all()
