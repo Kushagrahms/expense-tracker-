@@ -1,12 +1,12 @@
 import {useEffect,useState} from "react";
-import API from "../services/api";
+import API from "../services/api.js";
 export default function Dashboard(){
 
     const[expenses,setExpenses]=useState([]);
     const[loading,setLoading]=useState(true);
 
     useEffect(()=>{
-        API.get("/expenses")
+        API.get("/expenses/")
            .then(res=>{
             console.log("Full Response",res.data);
             const expenseArray=res.data.data.expenses;

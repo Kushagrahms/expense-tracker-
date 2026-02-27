@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import API from "../services/api";
+import API from "../services/api.js";
 
 export default function Budgets() {
   const [budget, setBudget] = useState(0);

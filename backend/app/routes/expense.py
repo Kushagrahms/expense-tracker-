@@ -7,7 +7,7 @@ from sqlalchemy import func
 from app.utils.response import success_response,error_response
 from app.utils.validators import validate_expense_data
 
-expense_bp=Blueprint("Expense",__name__,url_prefix="/expenses")
+expense_bp=Blueprint("Expense",__name__,url_prefix="/api/expenses")
 #adding expense route
 @expense_bp.route("/",methods=["POST"])
 @jwt_required()
@@ -33,12 +33,10 @@ def add_expense():
 
 #get  user expense route
 
-@expense_bp.route("/",methods=["GET","OPTIONS"])
-@jwt_required(optional=True)
+@expense_bp.route("/",methods=["GET"])
+@jwt_required()
 def get_expenses():
-    if request.method=="OPTIONS":
-        return jsonify({}),200
-        
+       
     user_id=int(get_jwt_identity())
 
     expenses=Expense.query.filter_by(user_id=user_id).all()

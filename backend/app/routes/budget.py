@@ -4,7 +4,7 @@ from app.models.budget import Budget
 from app.extensions import db
 from datetime import datetime
 
-budget_bp = Blueprint("budget", __name__, url_prefix="/budgets")
+budget_bp = Blueprint("budget", __name__, url_prefix="/api/budgets")
 
 @budget_bp.route("/", methods=["GET", "POST"])
 @jwt_required()
