@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { updateProfile, changePassword, deleteAccount } from "../services/userService";
 import { useNavigate } from "react-router-dom";
-
+import API from "../services/api.js";
 const Settings = () => {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [showDeleteModal,setShowDeleteModal] = useState(false);
 
   // Update Profile
   const handleUpdate = async (e) => {
@@ -35,19 +36,15 @@ const Settings = () => {
   };
 
   // Delete Account
-  const handleDelete = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete your account?");
-    if (!confirmDelete) return;
-
-    try {
-      await deleteAccount();
-      localStorage.removeItem("token");
-      alert("Account deleted");
-      navigate("/login");
-    } catch (err) {
-      alert("Error deleting account");
-    }
-  };
+  const handleDeleteAccount = async () => {
+  try {
+    await API.put("/user/delete");
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -102,9 +99,38 @@ const Settings = () => {
           Danger Zone
         </h2>
 
-        <button className="bg-red-600 px-6 py-3 rounded-lg text-white hover:bg-red-700 transition">
-          Delete Account
+<button  onClick={() => setShowDeleteModal(true)}   className="bg-red-600 px-6 py-3 rounded-lg text-white hover:bg-red-700 transition">
+  Delete Account
+</button>
+{showDeleteModal && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div className="bg-bgCard p-8 rounded-2xl w-full max-w-md shadow-2xl">
+      <h2 className="text-xl text-textPrimary mb-4">
+        Confirm Account Deletion
+      </h2>
+
+      <p className="text-textSecondary mb-6">
+        This action cannot be undone. All your expenses and budgets will be permanently deleted.
+      </p>
+
+      <div className="flex justify-end gap-4">
+        <button
+          onClick={() => setShowDeleteModal(false)}
+          className="px-5 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition"
+        >
+          Cancel
         </button>
+
+        <button
+          onClick={handleDeleteAccount}
+          className="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+        >
+          Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </div>
   );
