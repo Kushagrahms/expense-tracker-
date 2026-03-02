@@ -1,0 +1,71 @@
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "22"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"expense-frontend","namespace":"default"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"expense-frontend"}},"template":{"metadata":{"labels":{"app":"expense-frontend"}},"spec":{"containers":[{"env":[{"name":"VITE_API_BASE_URL","value":"http://backend-service:5000/api"}],"image":"kushagrashri/expense-frontend:v2","imagePullPolicy":"Always","name":"frontend","ports":[{"containerPort":80}]}]}}}}
+  creationTimestamp: "2026-02-28T10:22:27Z"
+  generation: 22
+  name: expense-frontend
+  namespace: default
+  resourceVersion: "23902"
+  uid: a17f0fb9-d131-4030-b8cd-2f3760465ed2
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: expense-frontend
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2026-03-02T16:48:12+05:30"
+      labels:
+        app: expense-frontend
+    spec:
+      containers:
+      - image: kushagrashri/expense-frontend:v2
+        imagePullPolicy: Always
+        name: frontend
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2026-03-02T11:31:12Z"
+    lastUpdateTime: "2026-03-02T11:31:12Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2026-02-28T10:22:27Z"
+    lastUpdateTime: "2026-03-02T11:44:53Z"
+    message: ReplicaSet "expense-frontend-66bbd569b6" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 22
+  readyReplicas: 1
+  replicas: 1
+  terminatingReplicas: 0
+  updatedReplicas: 1

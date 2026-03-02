@@ -14,10 +14,9 @@ import {PieChart,Pie,Cell,
 export default function Reports(){
   const[expenses,setExpenses]=useState([]);
   useEffect(()=>{
-      const token = localStorage.getItem("token");
-      if (!token) return;
-    API.get("/expenses/")
+    API.get("/expenses/", { params: { limit: 100 } })
     .then((res)=>{
+      console.log("Fetched expenses:", res.data.data.expenses);
       setExpenses(res.data.data.expenses || [] );
   })
   .catch((err)=>{

@@ -18,15 +18,16 @@ export default function Transactions(){
 
     useEffect(() =>
     { fetchExpenses();
-        }, [filters]);
+        }, []);
 
         const fetchExpenses=() =>{
             const params={};
+            console.log("fetchExpenses called");
 
             if (filters.category) params.category=filters.category;
             if(filters.sort) params.sort=filters.sort;
 
-            API.get("/expenses",{params}).then((res) =>{
+            API.get("/expenses",{params: { limit: 100 }}).then((res) =>{
                 console.log("full response",res.data);
 
                 const fetched=Array.isArray(res.data?.data?.expenses)?res.data.data.expenses : [];
@@ -40,11 +41,13 @@ export default function Transactions(){
                 }
                 setExpenses(filtered);
                 setLoading(false);
+                console.log("SUCCESS");
             })
             .catch((err)=>{
                 console.log("Error",err.response?.data || err.message);
                 setExpenses([]);
                 setLoading(false);
+                console.log("FAILED");
 
             });
         };
@@ -60,53 +63,58 @@ export default function Transactions(){
         const handleChange=(e)=>{
             setFormData({...formData,[e.target.name]:e.target.value});
         };
-        const handleAddExpense=(e)=>{
-            e.preventDefault();
-            API.post("/expenses",formData)
-            .then(()=>{
-                setFormData({title: "",amount: "" ,category: ""});
+        
+       const handleSubmit = (e) => {
+    e.preventDefault();
+
+    console.log("Submitting:", formData);
+
+    // Proper validation
+    if (
+        formData.title.trim() === "" ||
+        formData.category.trim() === "" ||
+        formData.amount === ""
+    ) {
+        console.log("Validation blocked");
+        return;
+    }
+
+    console.log("Sending POST now...");
+
+    if (editingId) {
+        API.put(`/expenses/${editingId}`, {
+    ...formData,
+    category: formData.category.trim().toLowerCase(),
+    amount: Number(formData.amount)})
+            .then(() => {
+                console.log("Update success");
                 fetchExpenses();
-            })
-            .catch((err)=>{
-                console.log("Add error:", err.response?.data || err.message);
-
-            });
-        };
-        const handleSubmit=(e)=>{
-            e.preventDefault();
-            if(!formData.title || !formData.amount || !formData.category) return;
-
-            if(editingId){
-                //update
-                API.put(`/expenses/${editingId}`, formData)
-                .then(()=>{
-                    fetchExpenses();
-                    setEditingId(null);
-                    setFormData({
-                        title:"",
-                        amount:"",
-                        category:"",
-                    });
-                })
-                .catch((err)=>{
-                    console.log("update error",err.response?.data || err.message);
+                setEditingId(null);
+                setFormData({
+                    title: "",
+                    amount: "",
+                    category: "",
                 });
-            }else{                
-            //create
-            API.post("/expenses",formData)
-            .then(()=>{
+            })
+            .catch((err) => {
+                console.log("Update error", err.response?.data || err.message);
+            });
+    } else {
+        API.post("/expenses/", {...formData, category: formData.category.trim().toLowerCase(),amount : Number(formData.amount)})
+            .then(() => {
+                console.log("POST success");
                 fetchExpenses();
                 setFormData({
-                    title:"",
-                    amount:"",
-                    category:""
+                    title: "",
+                    amount: "",
+                    category: "",
                 });
             })
-            .catch((err)=>{
+            .catch((err) => {
                 console.log("Add error", err.response?.data || err.message);
             });
-        }
-        };
+    }
+};
         const handleEdit=(expense)=>{
             setFormData({
                 title:expense.title,
@@ -168,7 +176,7 @@ export default function Transactions(){
   </div>
 
   <button
-    onClick={handleSubmit}
+    type="submit"
     className="mt-6 bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2 rounded-lg transition">
     {editingId ? "Update":"Add"}
   </button>
@@ -214,16 +222,16 @@ export default function Transactions(){
               >
               <div>
                 <p className="text-textPrimary font-semibold">
-                    {expense.title};
+                    {expense.title}
                 </p>
                 <p className="text-textSecondary text-sm">
-                    {expense.category} .{" "}
+                   {expense.category.charAt(0).toUpperCase() + expense.category.slice(1)} .{" "}
                     {new Date(expense.created_at).toLocaleDateString()}
                 </p>
               </div>
               <div className="flex items-center gap-6">
                 <p className="text-accent font-semibold">
-                    {expense.amount};
+                    {expense.amount}
                 </p>
                 <button onClick={()=>handleDelete(expense.id)} className="text-danger hover:opacity-80 transition">
                     Delete
